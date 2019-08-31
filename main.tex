@@ -1,0 +1,59 @@
+% !TeX spellcheck = ru_RU
+\documentclass[10pt,a4paper,openany]{book}
+\usepackage[russian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{tabularx,ragged2e,booktabs}
+\usepackage{tikz}
+\usepackage{epstopdf}
+\usepackage{graphicx}
+\usepackage[style=russian]{csquotes}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{hyperref}
+
+\begin{document}
+\title{Компьютерные сети \\ Учебное пособие}
+\date{}
+\maketitle
+
+\theoremstyle{definition}
+\newtheorem{exmp}{Пример}[section]
+
+\usetikzlibrary{arrows,positioning} 
+\tikzset{
+	%Define standard arrow tip
+	>=stealth',
+}
+
+\tableofcontents
+\chapter*{Предисловие}
+\input{intro}
+\chapter{Введение в компьютерные сети}
+\input{osi_tcpip}
+\chapter{Ethernet}
+\input{ethernet_mac}
+\input{ethernet_phy}
+\chapter{Коммутация}
+\input{switching}
+\input{stp}
+\chapter{Протокол IPv4}
+\input{ip}
+\chapter{Протоколы транспортного уровня}
+\input{tcp}
+\input{udp}
+\chapter{Протоколы маршрутизации}
+\input{rip}
+\input{ospf}
+\input{eigrp}
+\chapter{Протокол DHCP}
+\input{dhcp}
+\chapter{Протокол IPv6}
+\input{ipv6}
+
+\bibliographystyle{ugost2008}
+\bibliography{biblio}
+
+\end{document}

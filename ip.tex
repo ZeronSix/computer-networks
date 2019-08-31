@@ -1,0 +1,315 @@
+% !TeX spellcheck = ru_RU
+\section{Версии протокола IP}
+На данный момент существуют две версии протокола IP: 
+\begin{itemize}
+	\item IPv4, являющаяся наиболее используемой на данный момент
+	\item IPv6, постепенно приходящая на замену IPv4
+\end{itemize}
+
+В данной главе рассматривается IPv4, IPv6 будет рассмотрен позднее.
+\section{Адресация}
+\subsection{IP-адреса}
+В IPv4 используются четырехбайтовые адреса, например, $192.168.1.1$. Введение новых адресов в дополнение к MAC-адресам необходимо для создания иерархии в сетях. IP-адреса не привязаны к железу, и их можно группировать в подсети.
+\subsection{Классовая адресация}
+Ранее в IPv4 существовало 5 классов IP-адресов (см. табл.~\ref{tbl:ip_classes}). 
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|l|l|}
+		\hline
+		Класс & \multicolumn{1}{c|}{Значения первого октета} & \multicolumn{1}{c|}{Тип} \\ \hline
+		A & 1-126 & \multirow{3}{*}{unicast} \\ \cline{1-2}
+		\textit{B} & 128-191 &  \\ \cline{1-2}
+		C & 192-223 &  \\ \hline
+		D & 224-239 & multicast \\ \hline
+		E & 240-255 & экспериментальные \\ \hline
+	\end{tabular}
+	\caption{Классы IP-адресов}
+	\label{tbl:ip_classes}
+\end{table}
+
+Помимо этого, выделяется особый широковещательный адрес $255.255.255.255$.
+
+Классы были необходимы для введения группировки IP-адресов на подсети, позволяющей существенно уменьшить размеры таблиц маршрутизации.
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		\draw (-4.8, 0) -- (-3.3, 0);
+		\fill[black] (-3.2, 0) circle (1.25pt);
+		\draw (-3.1, 0) -- (-1.6, 0);
+		\fill[black] (-1.5, 0) circle (1.25pt);
+		\draw (-1.4, 0) -- (0.1, 0);
+		\fill[black] (0.2, 0) circle (1.25pt);
+		\draw (0.3, 0) -- (1.8, 0);
+		\draw[red] (0.2, 0.4) -- (0.2, -0.4);
+		
+		\node at (3.5, 0) [right] {Класс C};
+		\node at (-2.35, 0) [below] {Сетевая часть};
+		\node at (0.2, 0) [below right] {Хостовая часть};
+		
+		\draw (-4.8, -1) -- (-3.3, -1);
+		\fill[black] (-3.2, -1) circle (1.25pt);
+		\draw (-3.1, -1) -- (-1.6, -1);
+		\fill[black] (-1.5, -1) circle (1.25pt);
+		\draw (-1.4, -1) -- (0.1, -1);
+		\fill[black] (0.2, -1) circle (1.25pt);
+		\draw (0.3, -1) -- (1.8, -1);
+		\draw[red] (-1.5, -0.6) -- (-1.5, -1.4);
+		
+		\node at (3.5, -1) [right] {Класс B};
+		\node at (-3.2, -1) [below] {Сетевая часть};
+		\node at (0.3, -1) [below] {Хостовая часть};
+		
+		\draw (-4.8, -2) -- (-3.3, -2);
+		\fill[black] (-3.2, -2) circle (1.25pt);
+		\draw (-3.1, -2) -- (-1.6, -2);
+		\fill[black] (-1.5, -2) circle (1.25pt);
+		\draw (-1.4, -2) -- (0.1, -2);
+		\fill[black] (0.2, -2) circle (1.25pt);
+		\draw (0.3, -2) -- (1.8, -2);
+		\draw[red] (-3.2, -1.6) -- (-3.2, -2.4);
+		
+		\node at (3.5, -2) [right] {Класс A};
+		\node at (-3.2, -2) [below left] {Сетевая часть};
+		\node at (-0.65, -2) [below] {Хостовая часть};
+	\end{tikzpicture}
+	\caption{Сетевая и хостовая часть IP-адреса}
+	\label{fig:ip_classes}
+\end{figure}
+
+Для этого вводится деление адреса на сетевую и хостовую часть( см. рис.~\ref{fig:ip_classes}). Адреса узлов, находящихся в одном сегменте сети, должны иметь одинаковые сетевые, но разные хостовые части.
+
+\begin{exmp}
+Рассмотрим два IP-адреса класса A: $\underline{\mathbf{10}}.10.1.1$ и $\underline{\mathbf{10}}.11.12.13$. Сетевая часть первого адреса равна сетевой части второго адреса, следовательно, они принадлежат одной подсети.
+\end{exmp}
+
+\subsection{Бесклассовая адресация}
+Для определения того, принадлежат ли адреса одной подсети, в современных сетях используются маски подсети -- 32-битные числа. Маска подсети имеет строго фиксированный формат, имеющий следующий двоичный вид: $\underbrace{1111...0000}_\text{32 бита}$. Важно, что сначала идет несколько единиц, а затем только нули. Сетевая часть IP-адреса имеет 
+
+\begin{exmp}
+Рассмотрим адрес $1.2.3.4$ с маской $255.255.255.0$. Сетевая часть в этом случае будет определяться следующим образом:
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|l|l|}
+		\hline
+		\multicolumn{1}{|l|}{} & \multicolumn{1}{c|}{Десятичный вид} & \multicolumn{1}{c|}{Двоичный вид}  \\ \hline
+		IP-адрес & 1.2.3.4        & $\underbrace{0000001.00000010.00000011}_\text{Сетевая часть}.\underbrace{00000100}_\text{Хостовая}$ \\ \hline
+		Маска    & 255.255.255.0  & 1111111.11111111.11111111.00000000 \\ \hline
+	\end{tabular}
+	\caption{Пример применения маски}
+	\label{tbl:ip_maskexample}
+\end{table}
+
+Также можно использовать запись $1.2.3.4/24$, это эквивалентно применению маски $255.255.255.0$.
+\end{exmp}
+
+Стоит отметить, что маски позволяют проводить границу IP-адреса где угодно. 
+
+\subsection{Количество хостов в подсети}
+Стоит отметить, что внутри каждой подсети зарезервировано два адреса со следующими хостовыми частями:
+\begin{itemize}
+	\item $00...0$ -- адрес сети, не назначается ни одному хосту;
+	\item $11...1$ -- широковещательный адрес для конкретной подсети.
+\end{itemize}
+
+Таким образом, каждая подсеть может содержать $2^n-2$ хостов, где $n$ - количество бит в хостовой части.
+
+\begin{exmp}
+Рассмотрим следующие маски:
+\begin{itemize}
+	\item /30 -- 2 узла;
+	\item /24 -- 254 узла;
+	\item /29 -- 6 узлов.	
+\end{itemize}
+\end{exmp}
+\begin{exmp}
+Рассмотрим следующую сеть (см. рис~\ref{fig:ip_maxhostcount_exmp}):
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		\draw (-2, -2) -- (0,0);
+		\draw (0, -2) -- (0,0);
+		\draw (2, -2) -- (0,0);
+		\draw (0, 0) -- (4, 0);
+		\draw(-2, -1) -- (0, 0);
+		
+		\node at (-2, -2) [label=below:A] {\includegraphics{pic/pc.eps}};
+		\node at (0, -2) [label=below:B] {\includegraphics{pic/pc.eps}};
+		\node at (2, -2) [label=below:C] {\includegraphics{pic/pc.eps}};
+		\node at (-2, -1) [below] {...};
+		
+		\node at (0, 0) {\includegraphics{pic/switch.eps}};
+		\node at (4, 0) {\includegraphics{pic/router.eps}};
+		\node at (3.4, 0) [above left] {Fa0/0};
+	\end{tikzpicture}
+	\caption{Пример сети, в которой не работает вышеприведенная формула}
+	\label{fig:ip_maxhostcount_exmp}
+\end{figure}
+
+В данной ситуации формула $2^n-2$ не применима, т.к. необходимо учитывать IP-адрес интерфейса Fa0/0 на роутере R1.
+\end{exmp}
+\subsection{Особые IP-адреса}
+Уникальность IP-адресов зависит только от пользователей и администраторов. 
+
+Не все адреса из классов A, B, C используются в глобальной адресации. Часть из них оставлена для использования в локальных сетях:
+\begin{itemize}
+	\item $10.0.0.0/8$ в классе A
+	\item $\left\{
+			\begin{array}{ll}
+				172.16.0.0/16\\
+				...\\
+				172.31.0.0/16\\
+			\end{array}\right.$ в классе B
+	\item $\left\{
+			\begin{array}{ll}
+				192.168.0.0/24\\
+				...\\
+				192.168.255.0/24\\
+			\end{array}\right.$ в классе C
+\end{itemize}
+Эти адреса не маршрутизируются в глобальном интернете.
+
+Также существует особая подсеть класса A $127.0.0.0/8$ -- так называемое замыкание на себя (чаще всего используется $127.0.0.1$). Адреса этой подсети используются в случае, если приложение, работающее на хосте, хочет связаться с другим приложением, работающим на этом же самом хосте. При этом данные не будут попадать в сеть.
+
+\section{Структура пакета IPv4}
+\subsection{Заголовок IPv4}
+\begin{table}[h!]
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+Октет & \multicolumn{4}{c|}{0} & \multicolumn{4}{c|}{1} & \multicolumn{4}{c|}{2} & \multicolumn{4}{c|}{3} \\ \hline
+0 & \multicolumn{2}{c|}{\begin{tabular}[c]{@{}c@{}}Version\\ 4 бита\end{tabular}} & \multicolumn{2}{c|}{\begin{tabular}[c]{@{}c@{}}IHL\\ 4 бита\end{tabular}} & \multicolumn{2}{c|}{\begin{tabular}[c]{@{}c@{}}DSCP\\ 6 бит\end{tabular}} & \multicolumn{2}{c|}{\begin{tabular}[c]{@{}c@{}}ECN\\ 2 бита\end{tabular}} & \multicolumn{8}{c|}{\begin{tabular}[c]{@{}c@{}}Total Length\\ 16 бит\end{tabular}} \\ \hline
+4 & \multicolumn{8}{c|}{\begin{tabular}[c]{@{}c@{}}Identification\\ 16 бит\end{tabular}} & \multicolumn{2}{c|}{\begin{tabular}[c]{@{}c@{}}Flags\\ 3 бита\end{tabular}} & \multicolumn{6}{c|}{\begin{tabular}[c]{@{}c@{}}Fragment Offset\\ 13 бит\end{tabular}} \\ \hline
+8 & \multicolumn{4}{c|}{\begin{tabular}[c]{@{}c@{}}Time To Live\\ 8 бит\end{tabular}} & \multicolumn{4}{c|}{\begin{tabular}[c]{@{}c@{}}Protocol\\ 8 бит\end{tabular}} & \multicolumn{8}{c|}{\begin{tabular}[c]{@{}c@{}}Header Checksum\\ 16 бит\end{tabular}} \\ \hline
+12 & \multicolumn{16}{c|}{\begin{tabular}[c]{@{}c@{}}Source IP Address\\ 32 бита\end{tabular}} \\ \hline
+16 & \multicolumn{16}{c|}{\begin{tabular}[c]{@{}c@{}}Destination IP Address\\ 32 бита\end{tabular}} \\ \hline
+20 & \multicolumn{16}{c|}{Options} \\ \hline
+ & \multicolumn{16}{c|}{Data} \\ \hline
+\end{tabular}
+\caption{Структура IPv4-пакета}
+\end{table}
+
+Рассмотрим все поля подробнее. 
+\begin{itemize}
+	\item \textbf{Version} -- версия протокола IP (4/6);
+	\item \textbf{IHL (Internet Header Length)} -- необходимо для того, чтобы роутер или узел понимал, где заканчивается заголовок и начинаются данные. Минимальный размер - 5 слов, максимальный - 15;
+	\item \textbf{DSCP} -- используется для разделения трафика на классы обслуживания;
+	\item \textbf{ECN} -- указатель перегрузки сети;
+	\item \textbf{Total length} -- позволяет устройству понять полный размер пакета: заголовок + данные (min -- 20 байт, max -- 65535 байт);
+	\item \textbf{Identification} -- используется при фрагментации (у фрагментов пакета значение должно быть одинаковым);
+	\item \textbf{Flags} -- $0|DF|MF$, 0 - всегда 0, остальные флаги описаны в разделе~\ref{sec:fragmentation};
+	\item \textbf{Fragment Offset} -- смещение данных фрагмента, говорящее узлу, на сколько байт нужно сместить данные данного фрагмента относительно данных первого фрагмента. Значение всегда делится на 8;
+	\item \textbf{Time To Live} -- число узлов, через которые может пройти пакет (min -- 0, max -- 255). Необходимо для того, чтобы пакет не блуждал бесконечно по сети;
+	\item \textbf{Protocol} -- указывает, данные какого протокола выше по стеку содержит данный пакет;
+	\item \textbf{Header Checksum} -- контрольная сумма заголовка;
+	\item \textbf{Source IP Address} -- IP-адрес отправителя;
+	\item \textbf{Destination IP Address} -- IP-адрес получателя (конечного узла);
+	\item \textbf{Options} -- поле дополнительных опций.
+\end{itemize}
+
+\label{sec:fragmentation}
+\section{Фрагментация}
+Рассмотрим подробнее процесс фрагментации IP-пакета. Если фрагментация запрещена, а размера пакета больше допустимого, то он будет отброшен. Термин \textbf{Maximum Transmission Unit (MTU)} означает максимальный размер пакета который может быть передан без фрагментации. 
+\begin{exmp}
+Рассмотрим сеть, изображенную на рис~\ref{fig:ip_fragmentationexample}.
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		\draw (-2, 0) -- (2,0);
+		\draw (-5.5, 0) -- (-2, 0);
+		\draw (5.5, 0) -- (2, 0);
+		
+		\node at (-5, 0) [label=above:A,label=below:192.168.1.2] {\includegraphics{pic/pc.eps}};
+		\node at (5, 0) [label=above:B,label=below:192.168.2.2] {\includegraphics{pic/pc.eps}};
+		
+		\node at (-3.6, 0) [above] {MTU 1500};
+		\node at (3.6, 0) [above] {MTU 1500};
+		\node at (0, 0) [above] {MTU 1000};
+		
+		\node at (-2, 0) [label=above:R1] {\includegraphics{pic/router.eps}};
+		\node at (2, 0) [label=above:R2] {\includegraphics{pic/router.eps}};
+	\end{tikzpicture}
+	\caption{Пример фрагментации}
+	\label{fig:ip_fragmentationexample}
+\end{figure}
+
+Пусть узел A хочет передать узлу B пакет размером 1500 байт. Роутер R1 выполняет фрагментацию, т.к. он может передать за один раз только 1000 байт. Как происходит фрагментация? Из MTU убирается заголовок, и далее пакет нарезается следующим образом: $|\approx1000|\approx500|$. Если MTU не 1000, а, например, 400, то пакет будет фрагментирован так: $|\approx400|\approx~400|\approx400|\approx300|$. \textbf{Внимание: } в книгах ICND говорится, что пакет делится на фрагменты равной длины. Это не так, пакет делится именно так, как описано выше.
+\end{exmp}
+
+Фрагментация -- это опция только устройств 3 уровня.
+
+Поле \textbf{Identification} у всех фрагментов остается одинаковым. 
+
+Рассмотрим флаги $DF$ и $MF$ подробнее.
+\begin{itemize}
+	\item Флаг $DF$ говорит о том, что пакет нельзя фрагментировать.
+	\item Флаг $MF$ ставится тогда, когда фрагмент не является последним пакетом в цепочке, т.е. при фрагментации ставится у всех пакетов, кроме последнего. Сделано это для понимания того, можно ли делать обратную сборку пакета.
+\end{itemize}
+
+Фрагментированные пакеты собирает только получатель и никто кроме него.
+
+Поле \textbf{Fragment offset} -- смещение текущего фрагмента относительно начала пакета, применяется только к данным. Если передается один нефрагментированный пакет, то это поле устанавливается в 0. 
+\section{Таблица маршрутизации}
+Срабатывает та запись, у которой более длинная маска, т.е. /24. Если и маски совпадают, то применяется AD (административная дистанция, т.е. степень доверия к источнику информации, чем меньше степень), и используется запись с меньшей AD. 
+
+Если полученный трафик не совпадает ни с одной записью из таблицы маршрутизации, то он отбрасывается (в отличие от коммутаторов, которые отправили бы его дальше). 
+
+Что происходит с широковещательными кадрами? Роутер их не перенаправляет, т.е. является их границей. 
+\section{Пересылка IP-пакетов}
+Рассмотрим процесс передачи IP-пакета на конкретном примере. Пусть имеется следующая сеть (см. рис.~\ref{fig:ip_send}), и узел A хочет отправить пакет узлу B. 
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+	\draw (-1.5, 0) -- (1.5,0);
+	\draw (-4, 0) -- (-2, 0);
+	\draw (4, 0) -- (2, 0);
+	\draw (-5.5, -2) -- (-4,0);
+	\draw (-2.5, -2) -- (-4,0);
+	\draw (4, 0) -- (5, -2);
+	
+	\node at (-5.5, -2) [label=above:A,label=below:.2] {\includegraphics{pic/pc.eps}};
+	\node at (-2.5, -2) [label=above:B,label=below:.3] {\includegraphics{pic/pc.eps}};
+	\node at (5, -2) [label=above:C,label=below:.2] {\includegraphics{pic/pc.eps}};
+	
+	
+	\node at (-1.5, 0) [label=above:R1] {\includegraphics{pic/router.eps}};
+	\node at (1.5, 0) [label=above:R2] {\includegraphics{pic/router.eps}};
+	\node at (-4, 0) [label=above:10.0.0.0/24] {\includegraphics{pic/switch.eps}};
+	\node at (4, 0) [label=above:10.0.2.0/24] {\includegraphics{pic/switch.eps}};
+	
+	\node at (-1.1, 0) [label=above right:.1] {};
+	\node at (1.1, 0) [label=above left:.2] {};
+	\node at (-1.9, 0) [label=above left:.1] {};
+	\node at (1.9, 0) [label=above right:.1] {};
+	
+	\node at (0, 1) [above] {10.0.1.0/24};
+	\end{tikzpicture}
+	\caption{Пример фрагментации}
+	\label{fig:ip_send}
+\end{figure}
+\begin{enumerate}
+	\item Сначала узел A пытается понять, находится ли он в одной подсети с узлом B. Для этого он берет свой IP-адрес, IP-адрес узла B и маску подсети, и определяет сетевые части обоих адресов. Если они равны, то узлы находятся в одной подсети. 
+	\item A отправляет B ARP-запрос, чтобы узнать MAC-адрес B. 
+	\item B отправляет A ARP-ответ. A сохраняет ответ в ARP-кэше.
+	\item Начинается отправка трафика.
+\end{enumerate}
+Теперь рассмотрим ситуацию, когда узлы не находятся в одной подсети, например, когда узел A хочет передать пакет узлу C. 
+\begin{enumerate}	
+	\item Как и в предыдущем примере, A определяет сетевые части двух IP-адресов и обнаруживает, что узлы находятся в разных подсетях.
+	\item A отправяет ARP-запрос шлюзу по умолчанию (англ. default gateway), в данном случае роутеру R1.
+	\item A узнает MAC-адрес роутера R1.
+	\item A формирует Ethernet-фрейм с MAC-адресом отправителя A и MAC-адресом получателя R1, содержащий IP-пакет. Фрейм отправляется.
+	\item R1 смотрит на IP-адрес получателя и понимает, что пакет предназначается не ему. Далее R1 обращается к своей таблице маршрутизации. Допустим, что он находит подходящую запись. 
+	\item R1 формирует новый фрейм и отправляет его через новый интерфейс.
+	\item Повторяется процедура между R1 и R2, аналогичная A и R1.
+	\item R2 понимает, что узел B находится в directly connected подсети. 
+	\item Снова повторяется ситуация с MAC-адресом между R2 и C.
+\end{enumerate}
+\section{Литература}
+\begin{itemize}
+	\item ICND1 \cite{icnd1eng}, Глава 4;
+	\item ICND1 \cite{icnd1eng}, Часть III;
+	\item ICND1 \cite{icnd1eng}, Глава 19;
+	\item ICND1 \cite{icnd1eng}, Глава 20;
+	\item Олифер \cite{olipher}, Глава 15;
+	\item Олифер \cite{olipher}, Глава 16.
+\end{itemize}

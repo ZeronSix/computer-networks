@@ -1,0 +1,30 @@
+% !TeX spellcheck = ru_RU
+\section{Протокол UDP}
+\subsection{Заголовок}
+Структура заголовка UDP представлена в таблице~\ref{tbl:udp_header}.
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|c|l|c|l|}
+		\hline
+		Бит & \multicolumn{2}{c|}{0-15} & \multicolumn{2}{c|}{16-31} \\ \hline
+		0 & \multicolumn{2}{c|}{\begin{tabular}[c]{@{}c@{}}Source Port\\ порт отправителя\end{tabular}} & \multicolumn{2}{c|}{\begin{tabular}[c]{@{}c@{}}Destination Port\\ порт получателя\end{tabular}} \\ \hline
+		32 & \multicolumn{2}{c|}{\begin{tabular}[c]{@{}c@{}}Length\\ длина датаграмм\end{tabular}} & \multicolumn{2}{c|}{\begin{tabular}[c]{@{}c@{}}Checksum\\ Контрольная сумма\end{tabular}} \\ \hline
+		64 & \multicolumn{4}{c|}{Данные} \\ \hline
+	\end{tabular}
+	\caption{Структура заголовка UDP}
+	\label{tbl:udp_header}
+\end{table}
+\subsection{Описание}
+UDP - более простой по сравнению с TCP протокол, не обеспечивающий никаких гарантий доставки и упорядочения данных. Однако, благодаря отсутствию подтверждений он является более быстрым, что позволяет использовать его там, где нужна максимально быстрая доставка.
+\subsection{Некоторые приложения}
+\begin{itemize}
+	\item Голосовые приложения (VoIP);
+	\item DNS;
+	\item TFTP (обеспечивает надежную доставку своими средствами)
+\end{itemize}
+
+\subsection{Литература}
+\begin{itemize}
+	\item ICND1 \cite{icnd1eng}, Глава 5;
+	\item Олифер \cite{olipher}, Глава 17, с. 554-570.
+\end{itemize}
